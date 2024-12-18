@@ -13,7 +13,7 @@ export async function registerController(req, res) {
   };
   const registeredUser = await registerUser(payload);
 
-  res.send({
+  res.status(201).send({
     status: 201,
     message: 'Successfully registered a user!',
     data: registeredUser,
@@ -24,7 +24,6 @@ export async function loginController(req, res) {
   const { email, password } = req.body;
 
   const session = await loginUser(email, password);
-  console.log(session);
 
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,

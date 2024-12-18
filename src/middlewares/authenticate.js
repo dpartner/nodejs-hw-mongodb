@@ -4,7 +4,6 @@ import { Session } from '../models/session.js';
 
 export async function authenticate(req, res, next) {
   const { authorization } = req.headers;
-  console.log(authorization);
 
   if (typeof authorization !== 'string') {
     return next(createHttpError(401, 'Access token expired'));
