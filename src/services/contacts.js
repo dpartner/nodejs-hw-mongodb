@@ -5,22 +5,25 @@ export const getAllContacts = async ({
   perPage,
   sortBy,
   sortOrder,
-  filter
+  filter,
+  userId,
 }) => {
-  const skip = page > 0 ? (page -1) * perPage : 0;
-  const contactsQuery = ContactsCollection.find();
+  const skip = page > 0 ? (page - 1) * perPage : 0;
+  const contactsQuery = ContactsCollection.find({ userId });
 
   if (typeof filter.isFavourite !== 'undefined') {
-      contactsQuery.where('isFavourite').equals(filter.isFavourite);
+    contactsQuery.where('isFavourite').equals(filter.isFavourite);
   }
   if (typeof filter.type !== 'undefined') {
-      contactsQuery.where('contactType').equals(filter.type);
+    contactsQuery.where('contactType').equals(filter.type);
   }
 
-
   const [total, contacts] = await Promise.all([
-      ContactsCollection.countDocuments(contactsQuery),
-      contactsQuery.sort({[sortBy]: sortOrder}).skip(skip).limit(perPage),
+    ContactsCollection.countDocuments(contactsQuery),
+    contactsQuery
+      .sort({ [sortBy]: sortOrder })
+      .skip(skip)
+      .limit(perPage),
   ]);
 
   const totalPages = Math.ceil(total / perPage);
@@ -36,16 +39,18 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (contactId) => {
-    return ContactsCollection.findById(contactId);
+export const getContactById = async (contactId, userId) => {
+  return ContactsCollection.findOne({ _id: contactId, userId });
 };
 
 export const createContact = async (contact) => {
-return ContactsCollection.create(contact);
+  return ContactsCollection.create(contact);
 };
 
 export const updateContact = async (contactId, contact) => {
-  return ContactsCollection.findByIdAndUpdate(contactId, contact, {new: true});
+  return ContactsCollection.findByIdAndUpdate(contactId, contact, {
+    new: true,
+  });
 };
 
 export const deleteContact = async (contactId) => {
