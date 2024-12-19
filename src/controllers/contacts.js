@@ -72,6 +72,7 @@ export async function updateContactController(req, res) {
     email: req.body.email,
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
+    userId: req.user.id,
   };
 
   const result = await updateContact(contactId, contact);
@@ -87,7 +88,9 @@ export async function updateContactController(req, res) {
 
 export async function deleteContactController(req, res) {
   const { contactId } = req.params;
-  const result = await deleteContact(contactId);
+  const userId = req.user.id;
+
+  const result = await deleteContact(contactId, userId);
   if (!result) {
     throw createHttpError(404, 'Contact not found');
   }

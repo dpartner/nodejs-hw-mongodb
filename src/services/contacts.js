@@ -48,11 +48,19 @@ export const createContact = async (contact) => {
 };
 
 export const updateContact = async (contactId, contact) => {
-  return ContactsCollection.findByIdAndUpdate(contactId, contact, {
-    new: true,
-  });
+  return ContactsCollection.findOneAndUpdate(
+    { _id: contactId, userId: contact.userId },
+
+    contact,
+    {
+      new: true,
+    },
+  );
 };
 
-export const deleteContact = async (contactId) => {
-  return ContactsCollection.findByIdAndDelete(contactId);
+export const deleteContact = async (contactId, userId) => {
+  console.log(contactId);
+  console.log(userId);
+
+  return ContactsCollection.findOneAndDelete({ _id: contactId, userId });
 };
