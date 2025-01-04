@@ -1,7 +1,7 @@
-import createHttpError from "http-errors";
+import createHttpError from 'http-errors';
 
-export function validateBody (schema) {
-  return async (req,res, next) => {
+export function validateBody(schema) {
+  return async (req, res, next) => {
     try {
       await schema.validateAsync(req.body, {
         abortEarly: false,
@@ -12,7 +12,8 @@ export function validateBody (schema) {
         createHttpError(
           400,
           JSON.stringify(error.details.map((err) => err.message)),
-        ));
+        ),
+      );
     }
   };
 }

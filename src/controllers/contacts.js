@@ -1,4 +1,5 @@
 import createHttpError from 'http-errors';
+import * as fs from 'node:fs/promises';
 
 import {
   getAllContacts,
@@ -10,6 +11,7 @@ import {
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { uploadToCloudinary } from '../utils/saveFileToCloudinary.js';
 
 export async function getContactsContoller(req, res) {
   const { page, perPage } = parsePaginationParams(req.query);
@@ -48,6 +50,15 @@ export async function getContactController(req, res) {
 }
 
 export async function createContactController(req, res) {
+  let photo = null;
+
+  if (typeof req.file !== 'undefined') {
+    const result = await uploadToCloudinary(req.file.path);
+    await fs.unlink(req.file.path);
+
+    photo = result.secure_url;
+  }
+
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
@@ -55,6 +66,7 @@ export async function createContactController(req, res) {
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
     userId: req.user.id,
+    photo,
   };
   const result = await createContact(contact);
   res.status(201).send({
@@ -65,6 +77,15 @@ export async function createContactController(req, res) {
 }
 
 export async function updateContactController(req, res) {
+  let photo = null;
+
+  if (typeof req.file !== 'undefined') {
+    const result = await uploadToCloudinary(req.file.path);
+    await fs.unlink(req.file.path);
+
+    photo = result.secure_url;
+  }
+
   const { contactId } = req.params;
   const contact = {
     name: req.body.name,
@@ -73,6 +94,7 @@ export async function updateContactController(req, res) {
     isFavourite: req.body.isFavourite,
     contactType: req.body.contactType,
     userId: req.user.id,
+    photo,
   };
 
   const result = await updateContact(contactId, contact);
