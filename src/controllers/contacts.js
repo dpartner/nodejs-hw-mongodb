@@ -77,7 +77,7 @@ export async function createContactController(req, res) {
 }
 
 export async function updateContactController(req, res) {
-  let photo = null;
+  let photo = undefined;
 
   if (typeof req.file !== 'undefined') {
     const result = await uploadToCloudinary(req.file.path);
